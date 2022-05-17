@@ -63,8 +63,10 @@ class Preparer
                 'route' => '/' . $taxonomy_name . '/{slug}'
             ]);
 
+
             $this->migration['terms']->put($taxonomy_name, collect());
 
+            // dd($terms);
             foreach ($terms as $slug => $term_data) {
                 // Older versions of the importer saved the slugs of the terms to the json.
                 // We longer need to do that. This can be removed, but keeping it here
@@ -75,6 +77,7 @@ class Preparer
 
                 $this->migration['terms'][$taxonomy_name]->put($slug, $term_data);
             }
+            // dd($this->migration);
         }
     }
 

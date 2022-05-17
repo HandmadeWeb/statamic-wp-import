@@ -103,9 +103,9 @@ class Migrator
                 $taxonomy = Taxonomy::make($taxonomy_slug);
             }
 
-            foreach ($taxonomy_data as $key => $value) {
-                $taxonomy->set($key, $value);
-            }
+            // foreach ($taxonomy_data as $key => $value) {
+            //     $taxonomy->set($key, $value);
+            // }
 
             $taxonomy->save();
         }
@@ -132,7 +132,21 @@ class Migrator
                 }
 
                 foreach ($term_data as $key => $value) {
-                    $term->set($key, $value);
+
+                    if ($key === 'featured_image_url') {
+                        if(isset($value) && is_string($value))  {
+                            if (config('statamic-wp-import.download_images')) {
+                                $asset = $this->downloadAsset($value ?? '', 'taxonomies', $term_slug);
+
+                                if ($asset) {
+                                    $term->set('thumbnail', $asset->path());
+                                }
+                            }
+                        }
+                    } else {
+                        $term->set($key, $value);
+                    }
+
                 }
 
                 $term->save();
@@ -187,18 +201,43 @@ class Migrator
                 array_set($meta, 'data.slug', $slug);
 
                 foreach ($meta['data'] as $key => $value) {
-                    $entry->set($key, $value);
+
+                    if ($key === 'taxonomies' && is_array($value)) {
+                        foreach($value as $taxonomy => $terms) {
+                            $entry->set($taxonomy, $terms);
+                        }
+                    } else if($key === 'content') {
+
+                        // Get all image URL's from the content
+                        preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $value, $match);
+
+                        var_dump($match);
+
+                        foreach($match[0] as $url) {
+                            if (!str_contains($url, 'uploads')) return;
+                            $asset = $this->downloadAsset($url ?? '', $collection, $slug);
+                            if ($asset) {
+                                $value = str_replace($url, $asset->url(), $value);
+                            }
+                        }
+
+                        $entry->set($key, $value);
+                    } else if(!str_contains($key, 'gallery_slider') && !str_contains($key, 'image') && !str_contains($key, 'map_shortcode') && !str_contains($key, 'featured_image_url')) {
+                        $entry->set($key, $value);
+                    }
+
                 }
 
                 if (config('statamic-wp-import.download_images')) {
                     $asset = $this->downloadAsset($meta['data']['featured_image_url'] ?? '', $collection, $slug);
 
                     if ($asset) {
-                        $entry->set('featured_image', $asset->path());
+                        $entry->set('thumbnail', $asset->path());
                     }
                 }
 
                 $entry->save();
+                // $entry->update();
             }
         }
     }
@@ -235,7 +274,7 @@ class Migrator
                 $asset = $this->downloadAsset($meta['data']['featured_image_url'] ?? '', 'pages', $slug);
 
                 if ($asset) {
-                    $page->set('featured_image', $asset->path());
+                    $page->set('thumbnail', $asset->path());
                 }
             }
 

@@ -20,7 +20,7 @@ return [
     /*
      * Enable image overwriting. When set to false, a new image are created with a timestamp suffix, if the image already exists. The default is 'false'.
      */
-    'overwrite_images' => false,
+    'overwrite_images' => true,
 
     /*
      * Filter out meta data keys prefixed with '_'. The default is 'true'.

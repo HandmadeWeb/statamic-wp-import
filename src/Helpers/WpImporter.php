@@ -60,10 +60,11 @@ class WpImporter
             foreach ($terms as $slug => $term) {
                 $taxonomy_terms[$slug] = [
                     'slug' => $slug,
-                    'exists' => !!Term::query()->where('taxonomy', $taxonomy)->where('slug', $slug)->first(),
+                    'exists' => !!Term::query()->where('slug', $slug)?->first() ?? false,
                     '_checked' => true,
                 ];
             }
+
 
             $summary['taxonomies'][$taxonomy] = [
                 'title' => $taxonomy,
@@ -78,6 +79,8 @@ class WpImporter
 
     public function import($prepared, $summary)
     {
+
+
         (new Migrator)->migrate($prepared, $summary);
     }
 }
