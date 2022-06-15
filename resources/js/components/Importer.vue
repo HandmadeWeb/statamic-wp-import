@@ -101,8 +101,12 @@ export default {
       return !!this.duplicateCount(collection);
     },
 
-    duplicateCount: function (items) {
+    duplicateCount: function (items = {}) {
       let count = 0;
+
+      items = Object.values(items);
+
+      if (!items || !Array.isArray(items)) return count;
 
       items.forEach((item) => {
         if (!item.exists) {
@@ -115,7 +119,10 @@ export default {
       return count;
     },
 
-    uncheckDuplicates: function (items) {
+    uncheckDuplicates: function (items = {}) {
+      items = Object.values(items);
+      if (!items.length || !Array.isArray(items)) return;
+
       items.forEach((item) => {
         if (!item.exists) {
           return;
@@ -125,13 +132,17 @@ export default {
       });
     },
 
-    uncheckAll: function (items) {
+    uncheckAll: function (items = {}) {
+      items = Object.values(items);
+      if (!items.length || !Array.isArray(items)) return;
       items.forEach((item) => {
         item._checked = false;
       });
     },
 
-    checkAll: function (items) {
+    checkAll: function (items = {}) {
+      items = Object.values(items);
+      if (!items.length || !Array.isArray(items)) return;
       items.forEach((item) => {
         item._checked = true;
       });
