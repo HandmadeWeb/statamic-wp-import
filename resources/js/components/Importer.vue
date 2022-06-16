@@ -4,7 +4,7 @@ export default {
     token: String,
   },
 
-  data: function () {
+  data: function() {
     return {
       exporting: false,
       exported: false,
@@ -26,10 +26,10 @@ export default {
   },
 
   computed: {
-    totalPages: function () {
+    totalPages: function() {
       return this.summary.pages && Object.keys(this.summary.pages).length;
     },
-    showPagesSection: function () {
+    showPagesSection: function() {
       return (
         this.summary &&
         this.summary.pages &&
@@ -38,13 +38,13 @@ export default {
         !this.importFailed
       );
     },
-    showCollectionsSection: function () {
+    showCollectionsSection: function() {
       return this.summary && this.summary.collections;
     },
-    showTaxonomiesSection: function () {
+    showTaxonomiesSection: function() {
       return this.summary && this.summary.taxonomies;
     },
-    totalEntries: function () {
+    totalEntries: function() {
       return this.calculateTotalEntries();
     },
   },
@@ -54,7 +54,7 @@ export default {
   },
 
   methods: {
-    startImport: function () {
+    startImport: function() {
       this.importing = true;
       this.imported = false;
       this.importFailed = false;
@@ -101,7 +101,7 @@ export default {
       return !!this.duplicateCount(collection);
     },
 
-    duplicateCount: function (items = {}) {
+    duplicateCount: function(items = {}) {
       let count = 0;
 
       items = Object.values(items);
@@ -119,7 +119,7 @@ export default {
       return count;
     },
 
-    uncheckDuplicates: function (items = {}) {
+    uncheckDuplicates: function(items = {}) {
       items = Object.values(items);
       if (!items.length || !Array.isArray(items)) return;
 
@@ -132,7 +132,7 @@ export default {
       });
     },
 
-    uncheckAll: function (items = {}) {
+    uncheckAll: function(items = {}) {
       items = Object.values(items);
       if (!items.length || !Array.isArray(items)) return;
       items.forEach((item) => {
@@ -140,7 +140,7 @@ export default {
       });
     },
 
-    checkAll: function (items = {}) {
+    checkAll: function(items = {}) {
       items = Object.values(items);
       if (!items.length || !Array.isArray(items)) return;
       items.forEach((item) => {
@@ -148,41 +148,41 @@ export default {
       });
     },
 
-    size: function (obj) {
+    size: function(obj) {
       return Object.keys(obj).length;
     },
 
-    showCollection: function (collection) {
+    showCollection: function(collection) {
       this.showCollections.push(collection);
       this.showCollections = [...new Set(this.showCollections)];
     },
 
-    hideCollection: function (hidden) {
+    hideCollection: function(hidden) {
       this.showCollections = this.showCollections.filter((c) => {
         return c !== hidden;
       });
     },
 
-    shouldShowCollection: function (collection) {
+    shouldShowCollection: function(collection) {
       return this.showCollections.includes(collection);
     },
 
-    showTaxonomy: function (taxonomy) {
+    showTaxonomy: function(taxonomy) {
       this.showTaxonomies.push(taxonomy);
       this.showTaxonomies = [...new Set(this.showTaxonomies)];
     },
 
-    hideTaxonomy: function (hidden) {
+    hideTaxonomy: function(hidden) {
       this.showTaxonomies = this.showTaxonomies.filter((t) => {
         return t !== hidden;
       });
     },
 
-    shouldShowTaxonomy: function (taxonomy) {
+    shouldShowTaxonomy: function(taxonomy) {
       return this.showTaxonomies.includes(taxonomy);
     },
 
-    calculateTotalEntries: function () {
+    calculateTotalEntries: function() {
       let totalEntries = 0;
 
       if (this.summary.pages) {

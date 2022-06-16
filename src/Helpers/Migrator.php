@@ -211,18 +211,60 @@ class Migrator
                         // Get all image URL's from the content
                         preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $value, $match);
 
-                        var_dump($match);
-
                         foreach($match[0] as $url) {
                             if (!str_contains($url, 'uploads')) return;
                             $asset = $this->downloadAsset($url ?? '', $collection, $slug);
                             if ($asset) {
-                                $value = str_replace($url, $asset->url(), $value);
+                                $value = str_replace($url, $asset->id(), $value);
                             }
                         }
 
                         $entry->set($key, $value);
-                    } else if(!str_contains($key, 'gallery_slider') && !str_contains($key, 'image') && !str_contains($key, 'map_shortcode') && !str_contains($key, 'featured_image_url')) {
+                    } else if ($key === 'plan_view') {
+                        $plan_views = [];
+                        foreach($value as $plan_view) {
+                            $item = ["type" => 'new_set', 'enabled' => true];
+                            $item['title'] = $plan_view['title'];
+                            if ($plan_view['image_url']) {
+                                $asset = $this->downloadAsset($plan_view['image_url'] ?? '', $collection, $slug);
+                                if ($asset) {
+                                    $item['image_url'] = $asset->path();
+                                }
+                            }
+                            array_push($plan_views, $item);
+                        }
+                        $entry->set('plan_view',  $plan_views);
+                    } else if ($key === 'product_downloads') {
+                        $array = [];
+                        foreach($value as $download) {
+                            if ($download['download_url']) {
+                                $asset = $this->downloadAsset($download['download_url'] ?? '', $collection, $slug);
+                                if ($asset) {
+                                    array_push($array, $asset->path());
+                                }
+                            }
+                        }
+                        $entry->set('product_downloads',  $array);
+
+                    } else if ($key === 'product_gallery') {
+                        $array = [];
+                        foreach($value as $gallery_item) {
+                            if ($gallery_item['url']) {
+                                $asset = $this->downloadAsset($gallery_item['url'] ?? '', $collection, $slug);
+                                if ($asset) {
+                                    array_push($array, $asset->path());
+                                }
+                            }
+                        }
+                        $entry->set('product_gallery',  $array);
+                    } else if ($key === 'specifications') {
+                        $asset = $this->downloadAsset($value ?? '', $collection, $slug);
+                        if ($asset) {
+                            $entry->set('specifications', $asset->path());
+                        }
+                    }
+
+                    else if(!str_contains($key, 'speficiations') && !str_contains($key, 'product_downloads') && !str_contains($key, 'plan_view') && !str_contains($key, 'product_gallery') && !str_contains($key, 'gallery_slider') && !str_contains($key, 'image') && !str_contains($key, 'map_shortcode') && !str_contains($key, 'featured_image_url')) {
                         $entry->set($key, $value);
                     }
 

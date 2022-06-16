@@ -10,7 +10,7 @@ return [
     /**
      * The name of the assets container where images should be downloaded.
      */
-    'assets_container' => 'assets',
+    'assets_container' => 'cdn',
 
     /*
      * Whether to skip download of an image if it already exist. The default is 'false'.
